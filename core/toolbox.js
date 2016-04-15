@@ -116,7 +116,7 @@ Blockly.Toolbox.prototype.init = function() {
   var workspaceOptions = {
     disabledPatternId: workspace.options.disabledPatternId,
     parentWorkspace: workspace,
-    RTL: workspace.RTL,
+    RTL: workspace.RTL
   };
   /**
    * @type {!Blockly.Flyout}
@@ -206,7 +206,6 @@ Blockly.Toolbox.prototype.populate_ = function(newTree) {
           var childOut = rootOut.createNode(childIn.getAttribute('name'));
           childOut.blocks = [];
           treeOut.add(childOut);
-
           var custom = childIn.getAttribute('custom');
           if (custom) {
             // Variables and procedures are special dynamic categories.
@@ -214,9 +213,13 @@ Blockly.Toolbox.prototype.populate_ = function(newTree) {
           } else {
             syncTrees(childIn, childOut);
           }
-          var hue = childIn.getAttribute('colour');
-          if (goog.isString(hue)) {
-            childOut.hexColour = Blockly.makeColour(hue);
+          var colour = childIn.getAttribute('colour');
+          if (goog.isString(colour)) {
+            if (colour.match(/^#[0-9a-fA-F]{6}$/)) {
+              childOut.hexColour = colour;
+            } else {
+              childOut.hexColour = Blockly.hueToRgb(colour);
+            }
             hasColours = true;
           } else {
             childOut.hexColour = '';
@@ -407,7 +410,6 @@ Blockly.Toolbox.TreeControl.prototype.createNode = function(opt_html) {
  * @override
  */
 Blockly.Toolbox.TreeControl.prototype.setSelectedItem = function(node) {
-  Blockly.removeAllRanges();
   var toolbox = this.toolbox_;
   if (node == this.selectedItem_ || node == toolbox.tree_) {
     return;
@@ -422,9 +424,9 @@ Blockly.Toolbox.TreeControl.prototype.setSelectedItem = function(node) {
     // not rendered.
     toolbox.addColour_(node);
   }
+  var oldNode = this.getSelectedItem();
   goog.ui.tree.TreeControl.prototype.setSelectedItem.call(this, node);
   if (node && node.blocks && node.blocks.length) {
-   // if(toolbox.flyout_.svgGroup_.style.display == "none") {
     if(toolbox.flyout_.status_open == false) {
       toolbox.flyout_.show(node.blocks, true); //선택해서 나타나거.. 다른거 선택해서 없어질때나  
     }
@@ -437,6 +439,12 @@ Blockly.Toolbox.TreeControl.prototype.setSelectedItem = function(node) {
   } else {
     // Hide the flyout. // 같은거 눌러서 업어질
     toolbox.flyout_.hide(true);
+  }
+  if (oldNode != node && oldNode != this) {
+    var event = new Blockly.Events.Ui(null, 'category',
+        oldNode && oldNode.getHtml(), node && node.getHtml());
+    event.workspaceId = toolbox.workspace_.id;
+    Blockly.Events.fire(event);
   }
   if (node) {
     toolbox.lastCategory_ = node;

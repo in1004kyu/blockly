@@ -39,8 +39,8 @@ goog.require('goog.userAgent');
 
 /**
  * Class for an editable dropdown field.
- * @param {(!Array.<!Array.<string>>|!Function)} menuGenerator An array of options
- *     for a dropdown list, or a function which generates these options.
+ * @param {(!Array.<!Array.<string>>|!Function)} menuGenerator An array of
+ *     options for a dropdown list, or a function which generates these options.
  * @param {Function=} opt_validator A function that is executed when a new
  *     option is selected, with the newly selected value as its sole argument.
  *     If it returns a value, that value (which must be one of the options) will
@@ -56,7 +56,7 @@ Blockly.FieldDropdown = function(menuGenerator, opt_validator) {
 
   // Call parent's constructor.
   Blockly.FieldDropdown.superClass_.constructor.call(this, firstTuple[1],
-    opt_validator);
+      opt_validator);
 };
 goog.inherits(Blockly.FieldDropdown, Blockly.Field);
 
@@ -80,11 +80,10 @@ Blockly.FieldDropdown.prototype.CURSOR = 'default';
  * @param {!Blockly.Block} block The block containing this text.
  */
 Blockly.FieldDropdown.prototype.init = function(block) {
-  if (this.sourceBlock_) {
+  if (this.fieldGroup_) {
     // Dropdown has already been initialized once.
     return;
   }
-
   // Add dropdown arrow: "option ▾" (LTR) or "▾ אופציה" (RTL)
   this.arrow_ = Blockly.createSvgElement('tspan', {}, null);
   this.arrow_.appendChild(document.createTextNode(
@@ -264,12 +263,11 @@ Blockly.FieldDropdown.prototype.getValue = function() {
  */
 Blockly.FieldDropdown.prototype.setValue = function(newValue) {
   if (newValue === null || newValue === this.value_) {
-    return; // No change if null.
+    return;  // No change if null.
   }
-
   if (this.sourceBlock_ && Blockly.Events.isEnabled()) {
-   Blockly.Events.fire(new Blockly.Events.Change(
-     this.sourceBlock_, 'field', this.name, this.value_, newValue));
+    Blockly.Events.fire(new Blockly.Events.Change(
+        this.sourceBlock_, 'field', this.name, this.value_, newValue));
   }
   this.value_ = newValue;
   // Look up and display the human-readable text.
@@ -294,7 +292,7 @@ Blockly.FieldDropdown.prototype.setText = function(text) {
 /*
   if (this.sourceBlock_ && this.arrow_) {
     // Update arrow's colour.
-    //this.arrow_.style.fill = Blockly.makeColour(this.sourceBlock_.getColour());
+    this.arrow_.style.fill = this.sourceBlock_.getColour();
   }
   */
   if (text === null || text === this.text_) {

@@ -67,19 +67,33 @@ function test_maxBlocksWorkspace() {
   assertEquals('Cleared capacity.', 0, workspace.remainingCapacity());
 }
 
-
 function test_getWorkspaceById() {
- var workspaceA = new Blockly.Workspace();
- var workspaceB = new Blockly.Workspace();
- assertEquals('Find workspaceA.', workspaceA,
-     Blockly.Workspace.getById(workspaceA.id));
- assertEquals('Find workspaceB.', workspaceB,
-     Blockly.Workspace.getById(workspaceB.id));
- assertEquals('No workspace found.', null,
-     Blockly.Workspace.getById('I do not exist.'));
- workspaceA.dispose();
- assertEquals('Can\'t find workspaceA.', null,
-     Blockly.Workspace.getById(workspaceA.id));
- assertEquals('WorkspaceB exists.', workspaceB,
-     Blockly.Workspace.getById(workspaceB.id));
+  var workspaceA = new Blockly.Workspace();
+  var workspaceB = new Blockly.Workspace();
+  assertEquals('Find workspaceA.', workspaceA,
+      Blockly.Workspace.getById(workspaceA.id));
+  assertEquals('Find workspaceB.', workspaceB,
+      Blockly.Workspace.getById(workspaceB.id));
+  assertEquals('No workspace found.', null,
+      Blockly.Workspace.getById('I do not exist.'));
+  workspaceA.dispose();
+  assertEquals('Can\'t find workspaceA.', null,
+      Blockly.Workspace.getById(workspaceA.id));
+  assertEquals('WorkspaceB exists.', workspaceB,
+      Blockly.Workspace.getById(workspaceB.id));
+}
+
+function test_getBlockById() {
+  var workspace = new Blockly.Workspace();
+  var blockA = workspace.newBlock('');
+  var blockB = workspace.newBlock('');
+  assertEquals('Find blockA.', blockA, workspace.getBlockById(blockA.id));
+  assertEquals('Find blockB.', blockB, workspace.getBlockById(blockB.id));
+  assertEquals('No block found.', null,
+      workspace.getBlockById('I do not exist.'));
+  blockA.dispose();
+  assertEquals('Can\'t find blockA.', null, workspace.getBlockById(blockA.id));
+  assertEquals('BlockB exists.', blockB, workspace.getBlockById(blockB.id));
+  workspace.clear();
+  assertEquals('Can\'t find blockB.', null, workspace.getBlockById(blockB.id));
 }

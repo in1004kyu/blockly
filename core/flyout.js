@@ -44,7 +44,6 @@ goog.require('goog.Timer');
 Blockly.Flyout = function(workspaceOptions) {
   workspaceOptions.getMetrics = this.getMetrics_.bind(this);
   workspaceOptions.setMetrics = this.setMetrics_.bind(this);
-
   /**
    * @type {!Blockly.Workspace}
    * @private
@@ -95,7 +94,6 @@ Blockly.Flyout = function(workspaceOptions) {
 Blockly.Flyout.prototype.autoClose = false;
 
 Blockly.Flyout.prototype.status_open = true;
-
 
 /**
  * Corner radius of the flyout background.
@@ -239,7 +237,7 @@ Blockly.Flyout.prototype.getMetrics_ = function() {
     viewHeight: viewHeight,
     viewWidth: viewWidth,
     contentHeight: (optionBox.height + optionBox.y) * this.workspace_.scale,
-    viewTop: -this.workspace_.scrollY ,
+    viewTop: -this.workspace_.scrollY,
     contentTop: 0,
     absoluteTop: this.SCROLLBAR_PADDING,
     absoluteLeft: 0
@@ -365,7 +363,6 @@ Blockly.Flyout.prototype.isVisible = function() {
  * Hide and empty the flyout.
  */
 Blockly.Flyout.prototype.hide = function(option) {
-//  console.log("hide");
   if (!this.isVisible()) {
     return;
   }
@@ -450,6 +447,7 @@ Blockly.Flyout.prototype.show = function(xmlList, option) {
     goog.dom.removeNode(rect);
   }
   this.buttons_.length = 0;
+
   if (xmlList == Blockly.Variables.NAME_TYPE) {
     // Special category for variables.
     xmlList =
@@ -467,9 +465,9 @@ Blockly.Flyout.prototype.show = function(xmlList, option) {
   this.permanentlyDisabled_.length = 0;
   for (var i = 0, xml; xml = xmlList[i]; i++) {
     if (xml.tagName && xml.tagName.toUpperCase() == 'BLOCK') {
-      var block = Blockly.Xml.domToBlock(this.workspace_, xml);
+      var block = Blockly.Xml.domToBlock(xml, this.workspace_);
       if (block.disabled) {
-        // Record blocks that were initially disabled
+        // Record blocks that were initially disabled.
         // Do not enable these blocks as a result of capacity filtering.
         this.permanentlyDisabled_.push(block);
       }
@@ -488,12 +486,7 @@ Blockly.Flyout.prototype.show = function(xmlList, option) {
       // prevent the closure of the flyout if the user right-clicks on such a
       // block.
       child.isInFlyout = true;
-      // There is no good way to handle comment bubbles inside the flyout.
-      // Blocks shouldn't come with predefined comments, but someone will
-      // try this, I'm sure.  Kill the comment.
-      child.setCommentText(null);
     }
-   // console.log(block);
     //test
     block.render();
     var root = block.getSvgRoot();
@@ -644,7 +637,6 @@ Blockly.Flyout.prototype.blockMouseDown_ = function(block) {
       block.showContextMenu_(e);
     } else {
       // Left-click (or middle click)
-      Blockly.removeAllRanges();
       Blockly.Css.setCursor(Blockly.Css.Cursor.CLOSED);
       // Record the current mouse position.
       Blockly.Flyout.startDownEvent_ = e;
@@ -715,13 +707,13 @@ Blockly.Flyout.prototype.onMouseMoveBlock_ = function(e) {
     return;
   }
   //TODO:2016-03-22 JAY
+  // 지워도 될듯 james
   var targetEl = e.srcElement ? e.srcElement : e.target;
   if (targetEl.parentElement) {
     if (targetEl.parentElement.id == "f_1") {
       $("svg > .blocklyDraggable").hide();  
     }
   }
-  Blockly.removeAllRanges();
   var dx = e.clientX - Blockly.Flyout.startDownEvent_.clientX;
   var dy = e.clientY - Blockly.Flyout.startDownEvent_.clientY;
   // Still dragging within the sticky DRAG_RADIUS.
@@ -770,7 +762,7 @@ Blockly.Flyout.prototype.createBlockFunc_ = function(originBlock) {
     Blockly.Events.disable();
     // Create the new block by cloning the block in the flyout (via XML).
     var xml = Blockly.Xml.blockToDom(originBlock);
-    var block = Blockly.Xml.domToBlock(workspace, xml);
+    var block = Blockly.Xml.domToBlock(xml, workspace);
     // Place it in the same spot as the flyout copy.
     var svgRootOld = originBlock.getSvgRoot();
     if (!svgRootOld) {
@@ -804,7 +796,8 @@ Blockly.Flyout.prototype.createBlockFunc_ = function(originBlock) {
     // Reduce block's scale at flyout.
     block.moveBy((xyOld.x - xyNew.x)/workspace.scale, (xyOld.y - xyNew.y)/workspace.scale);
     Blockly.Events.enable();
-    if (Blockly.Events.isEnabled() && !block.isShadow()) {
+    if (Blockly.Events.isEnabled()) {
+      Blockly.Events.setGroup(true);
       Blockly.Events.fire(new Blockly.Events.Create(block));
     }
     if (flyout.autoClose) {
@@ -814,6 +807,8 @@ Blockly.Flyout.prototype.createBlockFunc_ = function(originBlock) {
     }
     // Start a dragging operation on the new block.
     block.onMouseDown_(e);
+    Blockly.dragMode_ = Blockly.DRAG_FREE;
+    block.setDragging_(true);
   };
 };
 

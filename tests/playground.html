@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -41,6 +40,15 @@
 <script src="../generators/dart/colour.js"></script>
 <script src="../generators/dart/variables.js"></script>
 <script src="../generators/dart/procedures.js"></script>
+<script src="../generators/lua.js"></script>
+<script src="../generators/lua/logic.js"></script>
+<script src="../generators/lua/loops.js"></script>
+<script src="../generators/lua/math.js"></script>
+<script src="../generators/lua/text.js"></script>
+<script src="../generators/lua/lists.js"></script>
+<script src="../generators/lua/colour.js"></script>
+<script src="../generators/lua/variables.js"></script>
+<script src="../generators/lua/procedures.js"></script>
 <script src="../msg/messages.js"></script>
 <script src="../blocks/logic.js"></script>
 <script src="../blocks/loops.js"></script>
@@ -55,6 +63,7 @@
 // Depending on the URL argument, render as LTR or RTL.
 var rtl = (document.location.search == '?rtl');
 var workspace = null;
+
 function start() {
   var toolbox = document.getElementById('toolbox');
   workspace = Blockly.inject('blocklyDiv',
@@ -78,19 +87,24 @@ function start() {
               startScale: 1.0,
               maxScale: 4,
               minScale: .25,
-              scaleSpeed: 1.1
-             },
+              scaleSpeed: 1.1}
           });
   // Restore previously displayed text.
-  var text = sessionStorage.getItem('textarea');
-  if (text) {
-    document.getElementById('importExport').value = text;
+  if (sessionStorage) {
+    var text = sessionStorage.getItem('textarea');
+    if (text) {
+      document.getElementById('importExport').value = text;
+    }
+    // Restore event logging state.
+    var state = sessionStorage.getItem('logEvents');
+    logEvents(Boolean(Number(state)));
+  } else {
+    // MSIE 11 does not support sessionStorage on file:// URLs.
+    logEvents(false);
   }
   taChange();
-  // Restore event logging state.
-  var state = sessionStorage.getItem('logEvents');
-  logEvents(Boolean(state));
 }
+
 function toXml() {
   var output = document.getElementById('importExport');
   var xml = Blockly.Xml.workspaceToDom(workspace);
@@ -99,22 +113,27 @@ function toXml() {
   output.select();
   taChange();
 }
+
 function fromXml() {
   var input = document.getElementById('importExport');
   var xml = Blockly.Xml.textToDom(input.value);
-  Blockly.Xml.domToWorkspace(workspace, xml);
+  Blockly.Xml.domToWorkspace(xml, workspace);
   taChange();
 }
+
 function toCode(lang) {
   var output = document.getElementById('importExport');
   output.value = Blockly[lang].workspaceToCode(workspace);
   taChange();
 }
+
 // Disable the "Import from XML" button if the XML is invalid.
 // Preserve text between page reloads.
 function taChange() {
   var textarea = document.getElementById('importExport');
-  sessionStorage.setItem('textarea', textarea.value)
+  if (sessionStorage) {
+    sessionStorage.setItem('textarea', textarea.value);
+  }
   var valid = true;
   try {
     Blockly.Xml.textToDom(textarea.value);
@@ -123,19 +142,24 @@ function taChange() {
   }
   document.getElementById('import').disabled = !valid;
 }
+
 function logEvents(state) {
   var checkbox = document.getElementById('logCheck');
   checkbox.checked = state;
-  sessionStorage.setItem('logEvents', Number(state));
+  if (sessionStorage) {
+    sessionStorage.setItem('logEvents', Number(state));
+  }
   if (state) {
     workspace.addChangeListener(logger);
   } else {
     workspace.removeChangeListener(logger);
   }
 }
+
 function logger(e) {
   console.log(e);
 }
+
 function airstrike(n) {
   var prototypes = [];
   var toolbox = document.getElementById('toolbox');
@@ -153,6 +177,7 @@ function airstrike(n) {
     block.render();
   }
 }
+
 function spaghetti(n) {
   var xml = spaghettiXml;
   for(var i = 0; i < n; i++) {
@@ -162,7 +187,7 @@ function spaghetti(n) {
   xml = '<xml xmlns="http://www.w3.org/1999/xhtml">' + xml + '</xml>';
   var dom = Blockly.Xml.textToDom(xml);
   console.time('Spaghetti domToWorkspace');
-  Blockly.Xml.domToWorkspace(workspace, dom);
+  Blockly.Xml.domToWorkspace(dom, workspace);
   console.timeEnd('Spaghetti domToWorkspace');
 }
 var spaghettiXml = [
@@ -195,6 +220,7 @@ var spaghettiXml = [
   '    <statement name="DO0"></statement>',
   '    <next></next>',
   '  </block>'].join('\n');
+
 </script>
 
 <style>
@@ -215,26 +241,12 @@ h1 {
   height: 95%;
   width: 70%;
 }
-#collaborators {
-  float: right;
-  width: 30px;
-  margin-left: 10px;
-}
-#collaborators > img {
-  margin-right: 5px;
-  height: 30px;
-  padding-bottom: 5px;
-  width: 30px;
-  border-radius: 3px;
-}
 #importExport {
   font-family: monospace;
 }
 </style>
 </head>
 <body onload="start()">
-
-  <div id="collaborators"></div>
 
   <div id="blocklyDiv"></div>
 
@@ -567,6 +579,8 @@ h1 {
     <input type="button" value="To PHP" onclick="toCode('PHP')">
     &nbsp;
     <input type="button" value="To Dart" onclick="toCode('Dart')">
+    &nbsp;
+    <input type="button" value="To Lua" onclick="toCode('Lua')">
     <br>
     <textarea id="importExport" style="width: 26%; height: 12em"
       onchange="taChange();" onkeyup="taChange()"></textarea>

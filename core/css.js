@@ -78,7 +78,6 @@ Blockly.Css.inject = function(hasCss, pathToMedia) {
   if (hasCss) {
     text += Blockly.Css.CONTENT.join('\n');
     if (Blockly.FieldDate) {
-      //console.log("FieldData is enable");
       text += Blockly.FieldDate.CSS.join('\n');
     }
   }
@@ -102,7 +101,6 @@ Blockly.Css.setCursor = function(cursor) {
   if (Blockly.Css.currentCursor_ == cursor) {
     return;
   }
-
   //document.body.style.cursor = 'url(' + Blockly.Css.mediaPath_ + '/' + 'handclosed' + '.cur), auto';
   Blockly.Css.currentCursor_ = cursor;
 
@@ -114,7 +112,6 @@ Blockly.Css.setCursor = function(cursor) {
   //Blockly.Css.styleSheet_.deleteRule(0);
   //Blockly.Css.styleSheet_.insertRule(rule, 0);
   // There is probably only one toolbox, so just change its style property.
-
   var toolboxen = document.getElementsByClassName('blocklyToolboxDiv');
   for (var i = 0, toolbox; toolbox = toolboxen[i]; i++) {
     if (cursor == Blockly.Css.Cursor.DELETE) {
@@ -132,7 +129,6 @@ Blockly.Css.setCursor = function(cursor) {
   } else {
     html.style.cursor = url;
   }
-  
 };
 
 /**
@@ -151,6 +147,13 @@ Blockly.Css.CONTENT = [
     'position: absolute;',
     'z-index: 999;',
     'border-radius : 10px;',
+  '}',
+
+  '.blocklyNonSelectable {',
+    'user-select: none;',
+    '-moz-user-select: none;',
+    '-webkit-user-select: none;',
+    '-ms-user-select: none;',
   '}',
 
   '.blocklyTooltipDiv {',
@@ -242,11 +245,6 @@ Blockly.Css.CONTENT = [
   '}',
 
   '.blocklyText {',
-    /*'cursor: default;',
-    'fill: #fff;',
-    'font-family: sans-serif;',
-    'font-size: 11pt;',
-    */
     'cursor: default;',
     'font-size: 12px;',
     'font-family: "Noto Sans CJK KR", sans-serif;',
@@ -259,25 +257,17 @@ Blockly.Css.CONTENT = [
 
   '.blocklyNonEditableText>rect,',
   '.blocklyEditableText>rect {',
-    /*'fill: #fff;',*/
     'fill: #97d450;',
     'fill-opacity: 0;',
   '}',
 
   '.blocklyNonEditableText>text,',
   '.blocklyEditableText>text {',
-/*    'fill: #000;', */
     'cursor: default;',
     'font-size: 12px;',
     'font-family: "Noto Sans CJK KR", sans-serif;',
     'fill: #fff;',
   '}',
-/*
-  '.blocklyEditableText:hover>rect {',
-    'stroke: #fff;',
-    'stroke-width: 2;',
-  '}',
-*/
   '.blocklyEditableText:hover>text {',
     'cursor:pointer;',
     'fill : black;',
@@ -315,6 +305,16 @@ Blockly.Css.CONTENT = [
   '.blocklyIconGroup:not(:hover),',
   '.blocklyIconGroupReadonly {',
     'opacity: .6;',
+  '}',
+
+  '.blocklyIconShape {',
+    'fill: #00f;',
+    'stroke: #fff;',
+    'stroke-width: 1px;',
+  '}',
+
+  '.blocklyIconSymbol {',
+    'fill: #fff;',
   '}',
 
   '.blocklyMinimalBody {',
@@ -462,14 +462,6 @@ Blockly.Css.CONTENT = [
     'background-position-x: 24px;',
     'background-position-y: 2px;',
     'border-bottom: 1px solid #ededed;',
-
-    /*
-    'height: 22px;',
-    'line-height: 22px;',
-    'margin-bottom: 3px;',
-    'padding-right: 8px;',
-    'white-space: nowrap;',
-    */
   '}',
 
   '.blocklyToolboxDiv[dir="RTL"] .blocklyTreeRow {',

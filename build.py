@@ -33,6 +33,7 @@
 #   javascript_compressed.js: The compressed Javascript generator.
 #   python_compressed.js: The compressed Python generator.
 #   dart_compressed.js: The compressed Dart generator.
+#   lua_compressed.js: The compressed Lua generator.
 #   msg/js/<LANG>.js for every language <LANG> defined in msg/js/<LANG>.json.
 
 import sys
@@ -79,7 +80,8 @@ class Gen_uncompressed(threading.Thread):
     f = open(target_filename, 'w')
     f.write(HEADER)
     f.write("""
-var isNodeJS = !!(typeof module !== 'undefined' && module.exports);
+var isNodeJS = !!(typeof module !== 'undefined' && module.exports &&
+                  typeof window === 'undefined');
 
 if (isNodeJS) {
   var window = {};
@@ -174,11 +176,13 @@ class Gen_compressed(threading.Thread):
     self.gen_core()
     self.gen_blocks()
     self.gen_generator("javascript")
-    self.gen_generator("python")
-    self.gen_generator("php")
-    self.gen_generator("dart")
+    #self.gen_generator("python")
+    #self.gen_generator("php")
+    #self.gen_generator("dart")
+    #self.gen_generator("lua")
 
   def movefile(self):
+    os.rename("blockly_uncompressed.js", "../blockly_uncompressed.js")  
     os.rename("blockly_compressed.js", "../blockly_compressed.js") 
     os.rename("blockly_compressed.js", "../blocks_compressed.js") 
     os.rename("blockly_compressed.js", "../javascript_compressed.js") 
@@ -288,7 +292,7 @@ class Gen_compressed(threading.Thread):
     elif json_data.has_key("errors"):
       errors = json_data["errors"]
       for error in errors:
-        print("FATAL ERROR")
+        print("FATAL ERROR %s" % target_filename)
         print(error["error"])
         if error["file"]:
           print("%s at line %d:" % (
@@ -358,8 +362,6 @@ class Gen_compressed(threading.Thread):
         print("UNKNOWN ERROR")
 
       os.rename(target_filename, "../"+target_filename) 
-
-
 
 class Gen_langfiles(threading.Thread):
   """Generate JavaScript file for each natural language supported.
@@ -471,5 +473,3 @@ https://developers.google.com/blockly/hacking/closure""")
 
   # This is run locally in a separate thread.
   Gen_langfiles().start()
-
-

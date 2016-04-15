@@ -79,7 +79,6 @@ Blockly.Generator.prototype.workspaceToCode = function(workspace) {
   var blocks = workspace.getTopBlocks(true);
   for (var x = 0, block; block = blocks[x]; x++) {
     var line = this.blockToCode(block);
-
     if (goog.isArray(line)) {
       // Value blocks return tuples of code and operator order.
       // Top-level blocks don't care about operator order.
@@ -261,8 +260,8 @@ Blockly.Generator.prototype.blockToCode = function(block) {
     return [this.scrub_(block, code[0]), code[1]];
   } else if (goog.isString(code)) {
     if (this.STATEMENT_PREFIX) {
-      code = this.STATEMENT_PREFIX.replace(/%1/g, '\'' + block.id + '\'') + code;
-      //code = code + this.STATEMENT_PREFIX.replace(/%1/g, '\'' + block.id + '\'');
+      code = this.STATEMENT_PREFIX.replace(/%1/g, '\'' + block.id + '\'') + 
+          code;
     }
     return this.scrub_(block, code);
   } else if (code === null) {
@@ -298,7 +297,7 @@ Blockly.Generator.prototype.valueToCode = function(block, name, order) {
   // Value blocks must return code and order of operations info.
   // Statement blocks must only return code.
   goog.asserts.assertArray(tuple, 'Expecting tuple from value block "%s".',
-    targetBlock.type);
+      targetBlock.type);
   var code = tuple[0];
   var innerOrder = tuple[1];
   if (isNaN(innerOrder)) {

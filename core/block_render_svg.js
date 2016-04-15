@@ -250,6 +250,7 @@ Blockly.BlockSvg.INNER_TOP_LEFT_CORNER =
     Blockly.BlockSvg.CORNER_RADIUS + ',' +
     Blockly.BlockSvg.CORNER_RADIUS;
     */
+
 /**
  * SVG path for drawing the bottom-left corner of a statement input.
  * Includes the rounded inside corner.
@@ -300,7 +301,6 @@ Blockly.BlockSvg.INNER_BOTTOM_LEFT_CORNER_HIGHLIGHT_LTR =
     Blockly.BlockSvg.DISTANCE_45_OUTSIDE) + ',' +
     (Blockly.BlockSvg.DISTANCE_45_OUTSIDE + 0.5);
 
-
 /**
  * Render the block.
  * Lays out and reflows a block based on its contents and settings.
@@ -332,7 +332,6 @@ Blockly.BlockSvg.prototype.render = function(opt_bubble) {
   // If there are no icons, cursorX will be 0, otherwise it will be the
   // width that the first label needs to move over by.
   var inputRows = this.renderCompute_(cursorX);
-  //console.log(inputRows);
   this.renderDraw_(cursorX, inputRows);
 
   if (opt_bubble !== false) {
@@ -413,7 +412,6 @@ Blockly.BlockSvg.prototype.renderCompute_ = function(iconWidth) {
   var hasDummy = false;
   var lastType = undefined;
   var isInline = this.getInputsInline() && !this.isCollapsed();
-  //console.log(inputList);
   for (var i = 0, input; input = inputList[i]; i++) {
     if (!input.isVisible()) {
       continue;
@@ -424,7 +422,6 @@ Blockly.BlockSvg.prototype.renderCompute_ = function(iconWidth) {
         input.type == Blockly.NEXT_STATEMENT) {
       // Create new row.
       lastType = input.type;
-      //console.log(lastType);
       row = [];
       if (isInline && input.type != Blockly.NEXT_STATEMENT) {
         row.type = Blockly.BlockSvg.INLINE;
@@ -447,7 +444,7 @@ Blockly.BlockSvg.prototype.renderCompute_ = function(iconWidth) {
       input.renderWidth = 0;
     }
     // Expand input size if there is a connection.
-    if (input.connection && input.connection.targetConnection) {
+    if (input.connection && input.connection.isConnected()) {
       var linkedBlock = input.connection.targetBlock();
       var bBox = linkedBlock.getHeightWidth();
       input.renderHeight = Math.max(input.renderHeight, bBox.height);
@@ -478,7 +475,7 @@ Blockly.BlockSvg.prototype.renderCompute_ = function(iconWidth) {
       var fieldSize = field.getSize();
       field.renderWidth = fieldSize.width;
       field.renderSep = (previousFieldEditable && field.EDITABLE) ?
-          (Blockly.BlockSvg.SEP_SPACE_X) : 0;
+          Blockly.BlockSvg.SEP_SPACE_X : 0;
       input.fieldWidth += field.renderWidth + field.renderSep;
       row.height = Math.max(row.height, fieldSize.height);
       previousFieldEditable = field.EDITABLE;
@@ -505,7 +502,7 @@ Blockly.BlockSvg.prototype.renderCompute_ = function(iconWidth) {
     if (row.type == Blockly.BlockSvg.INLINE) {
       for (var z = 0, input; input = row[z]; z++) {
         if (input.type == Blockly.INPUT_VALUE) {
-          row.height += (2 * Blockly.BlockSvg.INLINE_PADDING_Y);
+          row.height += 2 * Blockly.BlockSvg.INLINE_PADDING_Y;
           row.thicker = true;
           break;
         }
@@ -553,11 +550,7 @@ Blockly.BlockSvg.prototype.removeElementNode_ = function(node) {
  * @private
  */
 Blockly.BlockSvg.prototype.renderDraw_ = function(iconWidth, inputRows) {
-//  console.log(inputRows);
   this.startHat_ = false;
-//  console.log(this.type);
-  //console.log(this.childBlocks_);
-  //console.log(this);
   // Should the top and bottom left corners be rounded or square?
   if (this.outputConnection) {
     this.squareTopLeftCorner_ = true;
@@ -585,7 +578,6 @@ Blockly.BlockSvg.prototype.renderDraw_ = function(iconWidth, inputRows) {
   // Not Use this varible;
   this.squareTopLeftCorner_ = false;
   this.squareBottomLeftCorner_ = false;
-//  console.log(this.squareTopLeftCorner_);
   // Fetch the block's coordinates on the surface for use in anchoring
   // the connections.
   var connectionsXY = this.getRelativeToSurfaceXY();
@@ -607,7 +599,6 @@ Blockly.BlockSvg.prototype.renderDraw_ = function(iconWidth, inputRows) {
   
   var cursorY = this.renderDrawRight_(steps, highlightSteps, inlineSteps,
       highlightInlineSteps, connectionsXY, inputRows, iconWidth);
-  
   this.renderDrawBottom_(steps, highlightSteps, connectionsXY, cursorY);
   this.renderDrawLeft_(steps, highlightSteps, connectionsXY, cursorY);
  
@@ -686,9 +677,6 @@ Blockly.BlockSvg.prototype.renderDraw_ = function(iconWidth, inputRows) {
     this.removeElementNode_(this._icon_bottom);
   }
 
-   
-
-
   if (this.RTL) {
     // Mirror the block's path.
     this.svgPath_.setAttribute('transform', 'scale(-1 1)');
@@ -736,7 +724,6 @@ Blockly.BlockSvg.prototype.renderDrawTop_ =
     this.previousConnection.moveTo(connectionX, connectionY);
     // This connection will be tightened when the parent renders.
   }
-
   // For reduce length.
   if (this.blockPathType == Blockly.Block.BT_BASIC || 
     this.blockPathType == Blockly.Block.BT_EVENT) 
@@ -781,7 +768,6 @@ Blockly.BlockSvg.prototype.renderDrawRight_ = function(steps, highlightSteps,
     if (y == 0) {
       cursorX += this.RTL ? -iconWidth : iconWidth;
     }
-
     if (this.isCollapsed()) {
       console.log("Collapsed is occured!!!");
       //Todo Removed this line when after open
@@ -793,7 +779,6 @@ Blockly.BlockSvg.prototype.renderDrawRight_ = function(steps, highlightSteps,
       steps.push(Blockly.BlockSvg.JAGGED_TEETH);
       var remainder = row.height - Blockly.BlockSvg.JAGGED_TEETH_HEIGHT;
       steps.push('v', remainder);
-  
       this.width += Blockly.BlockSvg.JAGGED_TEETH_WIDTH;
     } else if (row.type == Blockly.BlockSvg.INLINE) {
       // Inline inputs.
@@ -824,7 +809,7 @@ Blockly.BlockSvg.prototype.renderDrawRight_ = function(steps, highlightSteps,
         cursorX = this.renderFields_(input.fieldRow, fieldX, fieldY);
         if (input.type != Blockly.DUMMY_INPUT) {
           // 아무것도 없을시에 기본 여백을 줘야하는 코드 추가해야함
-          if(input.connection.targetConnection == null) {
+          if(input.connection.isConnected() == null) {
             input.renderWidth = 50;
             input.renderHeight += 2;
           }
@@ -865,7 +850,6 @@ Blockly.BlockSvg.prototype.renderDrawRight_ = function(steps, highlightSteps,
             inlineSteps.push('z');     
           }
           */
-  
           // Create inline input connection.
           if (this.RTL) {
             connectionX = connectionsXY.x - cursorX -
@@ -879,7 +863,7 @@ Blockly.BlockSvg.prototype.renderDrawRight_ = function(steps, highlightSteps,
           connectionY = connectionsXY.y + cursorY +
               Blockly.BlockSvg.INLINE_PADDING_Y + 1;
           input.connection.moveTo(connectionX, connectionY);
-          if (input.connection.targetConnection) {
+          if (input.connection.isConnected()) {
             input.connection.tighten_();
           }
         }
@@ -962,6 +946,7 @@ Blockly.BlockSvg.prototype.renderDrawRight_ = function(steps, highlightSteps,
         highlightSteps.push('v', row.height - 1);
       }
     } else if (row.type == Blockly.INPUT_VALUE) { //이건 안쓸거지롱 
+
       // External input.
       var input = row[0];
       var fieldX = cursorX;
@@ -985,7 +970,7 @@ Blockly.BlockSvg.prototype.renderDrawRight_ = function(steps, highlightSteps,
           (this.RTL ? -inputRows.rightEdge - 1 : inputRows.rightEdge + 1);
       connectionY = connectionsXY.y + cursorY;
       input.connection.moveTo(connectionX, connectionY);
-      if (input.connection.targetConnection) {
+      if (input.connection.isConnected()) {
         input.connection.tighten_();
         this.width = Math.max(this.width, inputRows.rightEdge +
             input.connection.targetBlock().getHeightWidth().width -
@@ -996,7 +981,6 @@ Blockly.BlockSvg.prototype.renderDrawRight_ = function(steps, highlightSteps,
       var input = row[0];
       var fieldX = cursorX;
       var fieldY = cursorY;
-      //???모르겠음 무시하자 아직 안쓰임
       if (input.align != Blockly.ALIGN_LEFT) {
         var fieldRightX = inputRows.rightEdge - input.fieldWidth -
             2 * Blockly.BlockSvg.SEP_SPACE_X;
@@ -1069,7 +1053,6 @@ Blockly.BlockSvg.prototype.renderDrawRight_ = function(steps, highlightSteps,
     } else if (row.type == Blockly.NEXT_STATEMENT) {
       // Nested statement.
       var input = row[0];
-
       if (y == 0) {
         console.log("????????????????????????");
         // If the first input is a statement stack, add a small row on top.
@@ -1105,11 +1088,12 @@ Blockly.BlockSvg.prototype.renderDrawRight_ = function(steps, highlightSteps,
       steps.push('H', this.width);
       this.rightWidth = this.width;
       cursorX -= 0.5; // 디자인에 맞춘 이동값
+
       // Create statement connection.
       connectionX = connectionsXY.x + (this.RTL ? -cursorX : cursorX + 1);
       connectionY = connectionsXY.y + cursorY + 1;
       input.connection.moveTo(connectionX, connectionY);
-      if (input.connection.targetConnection) {
+      if (input.connection.isConnected()) {
         input.connection.tighten_();
         this.width = Math.max(this.width, inputRows.statementEdge +
             input.connection.targetBlock().getHeightWidth().width);
@@ -1128,6 +1112,7 @@ Blockly.BlockSvg.prototype.renderDrawRight_ = function(steps, highlightSteps,
         }
        // cursorY += Blockly.BlockSvg.SEP_SPACE_Y;
         cursorY += 32;
+
       }
     }
     cursorY += row.height;
@@ -1153,7 +1138,6 @@ Blockly.BlockSvg.prototype.renderDrawRight_ = function(steps, highlightSteps,
  */
 Blockly.BlockSvg.prototype.renderDrawBottom_ =
     function(steps, highlightSteps, connectionsXY, cursorY) {
-
     this.height = cursorY + 1;  // Add one for the shadow.
 
   if (this.nextConnection) {
@@ -1168,7 +1152,7 @@ Blockly.BlockSvg.prototype.renderDrawBottom_ =
     }
     var connectionY = connectionsXY.y + cursorY + 1;
     this.nextConnection.moveTo(connectionX, connectionY);
-    if (this.nextConnection.targetConnection) {
+    if (this.nextConnection.isConnected()) {
       this.nextConnection.tighten_();
     }
     this.height += 4;  // Height of tab.
@@ -1216,7 +1200,6 @@ Blockly.BlockSvg.prototype.renderDrawBottom_ =
  */
 Blockly.BlockSvg.prototype.renderDrawLeft_ =
     function(steps, highlightSteps, connectionsXY, cursorY) {
-     // console.log(steps);
   if (this.outputConnection) {
     // Create output connection.
     this.outputConnection.moveTo(connectionsXY.x, connectionsXY.y);

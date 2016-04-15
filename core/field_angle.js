@@ -119,6 +119,7 @@ Blockly.FieldAngle.OFFSET = 0;
  */
 Blockly.FieldAngle.WRAP = 360;
 
+
 /**
  * Radius of protractor circle.  Slightly smaller than protractor size since
  * otherwise SVG crops off half the border at the edges.

@@ -215,7 +215,7 @@ Blockly.Trashcan.prototype.createDom = function() {
  * @return {number} Distance from workspace bottom to the top of trashcan.
  */
 Blockly.Trashcan.prototype.init = function(bottom) {
-  this.bottom_ =  this.MARGIN_BOTTOM_ + bottom;
+  this.bottom_ = this.MARGIN_BOTTOM_ + bottom;
   this.setOpen_(false);
   return this.bottom_ + this.BODY_HEIGHT_ + this.LID_HEIGHT_;
 };
@@ -255,7 +255,6 @@ Blockly.Trashcan.prototype.position = function() {
       'translate(' + this.left_ + ',' + this.top_ + ')');
 };
 
-
 /**
  * Return the deletion rectangle for this trash can.
  * @return {goog.math.Rect} Rectangle in which to delete.
@@ -263,12 +262,11 @@ Blockly.Trashcan.prototype.position = function() {
 Blockly.Trashcan.prototype.getClientRect = function() {
   var trashRect = this.svgGroup_.getBoundingClientRect();
   return new goog.math.Rect(trashRect.left - this.MARGIN_HOTSPOT_,
-    trashRect.top - this.MARGIN_HOTSPOT_,
-    trashRect.width + 2 * this.MARGIN_HOTSPOT_,
-    trashRect.height + 2 * this.MARGIN_HOTSPOT_);
+                            trashRect.top - this.MARGIN_HOTSPOT_,
+                            trashRect.width + 2 * this.MARGIN_HOTSPOT_,
+                            trashRect.height + 2 * this.MARGIN_HOTSPOT_);
 
 };
-
 
 /**
  * Flip the lid open or shut.

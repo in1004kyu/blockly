@@ -19,10 +19,9 @@
  */
 
 /**
- * @fileoverview Empty name for the Blocks singleton.
+ * @fileoverview Empty name space for the Blocks singleton.
  * @author spertus@google.com (Ellen Spertus)
  */
 'use strict';
 
 goog.provide('Blockly.Blocks');
-

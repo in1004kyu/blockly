@@ -19,7 +19,7 @@
  */
 
 /**
- * @fileoverview field.  Used for editable titles, variables, etc.
+ * @fileoverview Field.  Used for editable titles, variables, etc.
  * This is an abstract class that defines the UI on the block.  Actual
  * instances would be Blockly.FieldTextInput, Blockly.FieldDropdown, etc.
  * @author fraser@google.com (Neil Fraser)
@@ -36,7 +36,7 @@ goog.require('goog.userAgent');
 
 
 /**
- * Abstract Class for an editable field.
+ * Abstract class for an editable field.
  * @param {string} text The initial content of the field.
  * @param {Function=} opt_validator An optional function that is called
  *     to validate any constraints on what the user entered.  Takes the new
@@ -66,12 +66,11 @@ Blockly.Field.cacheReference_ = 0;
 
 
 /**
-* Name of field.  Unique within each block.
-* Static labels are usually unnamed.
-* @type {string=}
-*/
+ * Name of field.  Unique within each block.
+ * Static labels are usually unnamed.
+ * @type {string=}
+ */
 Blockly.Field.prototype.name = undefined;
-
 
 /**
  * Maximum characters of text to display before adding an ellipsis.
@@ -80,12 +79,11 @@ Blockly.Field.prototype.name = undefined;
 Blockly.Field.prototype.maxDisplayLength = 50;
 
 /**
-* Visible text to display.
-* @type {string}
-* @private
-*/
+ * Visible text to display.
+ * @type {string}
+ * @private
+ */
 Blockly.Field.prototype.text_ = '';
-
 
 /**
  * Block this field is attached to.  Starts as null, then in set in init.
@@ -120,15 +118,22 @@ Blockly.Field.NBSP = '\u00A0';
 Blockly.Field.prototype.EDITABLE = true;
 
 /**
- * Install this field on a block.
+ * Attach this field to a block.
  * @param {!Blockly.Block} block The block containing this field.
  */
-Blockly.Field.prototype.init = function(block) {
-  if (this.sourceBlock_) {
+Blockly.Field.prototype.setSourceBlock = function(block) {
+  goog.asserts.assert(!this.sourceBlock_, 'Field already bound to a block.');
+  this.sourceBlock_ = block;
+};
+
+/**
+ * Install this field on a block.
+ */
+Blockly.Field.prototype.init = function() {
+  if (this.fieldGroup_) {
     // Field has already been initialized once.
     return;
   }
-  this.sourceBlock_ = block;
   // Build the DOM.
   this.fieldGroup_ = Blockly.createSvgElement('g', {}, null);
   if (!this.visible_) {
@@ -146,14 +151,14 @@ Blockly.Field.prototype.init = function(block) {
       this.fieldGroup_);
 
   this.updateEditable();
-  block.getSvgRoot().appendChild(this.fieldGroup_);
+  this.sourceBlock_.getSvgRoot().appendChild(this.fieldGroup_);
   this.mouseUpWrapper_ =
       Blockly.bindEvent_(this.fieldGroup_, 'mouseup', this, this.onMouseUp_);
   // Force a render.
   this.updateTextNode_();
   if (Blockly.Events.isEnabled()) {
     Blockly.Events.fire(new Blockly.Events.Change(
-     this.sourceBlock_, 'field', this.name, '', this.getValue()));
+        this.sourceBlock_, 'field', this.name, '', this.getValue()));
   }
 };
 
@@ -312,6 +317,7 @@ Blockly.Field.prototype.getSize = function() {
  * Returns the height and width of the field,
  * accounting for the workspace scaling.
  * @return {!goog.math.Size} Height and width.
+ * @private
  */
 Blockly.Field.prototype.getScaledBBox_ = function() {
   var bBox = this.borderRect_.getBBox();
@@ -408,9 +414,9 @@ Blockly.Field.prototype.setValue = function(newText) {
     return;
   }
   if (this.sourceBlock_ && Blockly.Events.isEnabled()) {
-   Blockly.Events.fire(new Blockly.Events.Change(
-     this.sourceBlock_, 'field', this.name, oldText, newText));
- }
+    Blockly.Events.fire(new Blockly.Events.Change(
+        this.sourceBlock_, 'field', this.name, oldText, newText));
+  }
   this.setText(newText);
 };
 
@@ -429,7 +435,7 @@ Blockly.Field.prototype.onMouseUp_ = function(e) {
   } else if (Blockly.isRightButton(e)) {
     // Right-click.
     return;
-  } else if (Blockly.dragMode_ == 2) {
+  } else if (Blockly.dragMode_ == Blockly.DRAG_FREE) {
     // Drag operation is concluding.  Don't open the editor.
     return;
   } else if (this.sourceBlock_.isEditable()) {
